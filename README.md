@@ -31,6 +31,35 @@ The dataset comes in two sizes:
    
 You will be using only one of the files in the dataset: **ratings.csv**.  The large version on the cluster has been stored as a parquet file, a binary format for Spark dataframes that is much faster to load than csv.
 
+## Task 1: build a global recommendation model
+
+- Start from the **task1** notebook provided (including loading  **ratings.paquet** into a dataframe
+- train a recommender model using the ALS approach. You may refer to the example code on the [Spark doc for Collaborative Filtering](https://spark.apache.org/docs/latest/mllib-collaborative-filtering.html#examples). However be aware that the input data format may be different
+- after you build the model, you need to add code to automatically optimise the *rank* hyperparameter, usiong RMSE as your performance metric. Report your best results in the notebook.
+
+## Task 2: Build the user-user network.
+
+- load up **ratings.parquet** again
+- create a graph where:
+  -- for each psir of users *u1*, *u2* there is an edge with associated weight *w*, where *w* is the number of movies that both *u1* and *u2* have rated (regardless on the actual rating).
+  -- if *u1* and *u2* have not got any rating in common, there is no edge between them.
+
+It is important that you comply with the prescribed output format for the graph, because it is to be used as input for the next step.
+In Spark memory, this is a dataframe with Schema
+```(source_node, target_node, weight)```
+    
+example:    
+```    source,target,weight
+    1,6,1
+    1,8,1
+    2,3,1
+    2,4,1
+```
+a small samnple file is provided [here](data/edge_sample.csv). 
+
+
+
+
 ## Repository File Structure
 
 `./data` : contains an example edge file for experimenting purpose.  
