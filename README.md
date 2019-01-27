@@ -58,35 +58,63 @@ example:
 ```
 a small sample file is provided [here](data/edge_sample.csv). 
 
+## Task 3: Community detection.
+
+This task requires you to implement a version of the Girwan-Newman algorithm that is optimised to make use of multiple workers on the Spark clsuter.
+
+You are given a python module that operates on the graoh structure you generated in Task 2, and implements: 
+* SSSP (Single Source Shortest Path) 
+* given a path between two nodes, compute the betweeness value for each of the edges along the path
+
+You may start from notebook **task3** which has the required **import** statements
+
+Using these methods, you will implement a version of GN that includes MapReduce patterns to parallelise execution on the entire graph.
+Details on this step will have been given in class.
+
+Report on the running for the algorithm both on the small and full datasets.
+
+You will need to be careful how you implement this step, because an inefficient implementation will simply not scale to the size of the full dataset.
+
+Note also that the number of communities you choose depends on the betweeness threshold. It is recommended that you do not generate more than 5 communities.
+
+# Checkpointing.
+
+In case you get stuck on this Task, a copy of its output (the community files) can be provided. You will get less than full  marks for this task, depending on your progress, but you will be able to progress to the next task.
+
+## Task 4: Generate user-user sub-matrices for each community
+
+Each community is a subgraph of the graph you generated in Task 2. For each of these, you need to extract the relevant rows and columns from the original U-M-R dataset, so that you can then train a recommender model for each of these communities (see next Task).
+
+In practice, given a community graph you will simply select all rows that correspond to users in that community.
+
+## Task 5:  build community-specific recommendation models
+
+This is effectively the same as Task 1, but repreated for each sub-matrix as produced in Task 4. For each model, report its RMSE performance.
+
+## Task 6: Compare models
+
+In this final task you are required to compare performance results obtained in Task 1 and Task 5, and discuss the rationale for choosing either solution.
+This is not a programming task but you are required to make notes in your notebook, and expect to discuss these during your viva.
+   
 
 
-
-## Repository File Structure
-
-`./data` : contains an example edge file for experimenting purpose.  
-`./dist` : contains the `Comscan` wheel file.  
-`./notebooks` : examples on how to use the library.  
-`./references` : references to implemented algorithms.   
-`./src` : the source code for `Comscan` library.  
-
-## Prerequisite Packages
+# Prerequisite Packages
 
 Packages|Version
 ---|---
 networkx|2.2.0
-matplotlib|>=3.0.1
+matplotlib|>=3.0.1tin
 pyspark|=2.3.0
 pandas|>=0.23.0
 
-## Installation
 
-`pip install ./dist/comscan-0.0.1-py3-none-any.whl`
-
-## Data Structures
-
-### Sequential
+## Details on of the Data Structures used in the assignment
 
 **Graph**
+
+This is a class you can import:
+
+`from comscan.model.graph import Graph`
 
 List of edges. It is loaded in memory as an adjacency list.
 
@@ -98,6 +126,8 @@ List of edges. It is loaded in memory as an adjacency list.
     2,3,1
     2,4,1
 
+Note: in Task 4, each of your workers require a copy of the entire graph to compute on. You will need to use a `broadcast variable` to hold the graph instance
+
 **Paths**
 
     {target: [path]}
@@ -106,68 +136,9 @@ List of edges. It is loaded in memory as an adjacency list.
     {1: [[1]], 2: [[1, 2], [1, 3, 2]], 3: [[1, 3]], 4: [[1, 2, 4], [1, 3, 2, 4]], 5: [[1, 2, 4, 5], [1, 3, 2, 4, 5]], 6: [[1, 2, 4, 6], [1, 3, 2, 4, 6], [1, 2, 4, 5, 6], [1, 3, 2, 4, 5, 6], [1, 2, 4, 7, 6], [1, 3, 2, 4, 7, 6]], 7: [[1, 2, 4, 7], [1, 3, 2, 4, 7]], 8: []}
 
 
-**Edges count map**:
+**Shortest Paths**
 
-contains count of shortest paths to this target through this edge
- 
-    {target: {edge: edge_count}}
-    
-    {1: {}, 2: {(1, 2): 1.0, (3, 2): 1.0, (1, 3): 1.0}, 3: {(1, 3): 1.0}, 4: {(1, 2): 1.0, (3, 2): 1.0, (1, 3): 1.0, (2, 4): 2.0}, 5: {(1, 2): 1.0, (4, 5): 2.0, (3, 2): 1.0, (1, 3): 1.0, (2, 4): 2.0}, 6: {(1, 2): 3.0, (5, 6): 2.0, (3, 2): 3.0, (1, 3): 3.0, (4, 6): 2.0, (4, 5): 2.0, (7, 6): 2.0, (2, 4): 6.0, (4, 7): 2.0}, 7: {(1, 2): 1.0, (4, 7): 2.0, (1, 3): 1.0, (3, 2): 1.0, (2, 4): 2.0}, 8: {}}
-
-Obtained from:
-- paths
-
-**Path count map**:
-
-    {target: path_count}
-    
-    {1: 1, 2: 2, 3: 1, 4: 2, 5: 2, 6: 6, 7: 2, 8: 0}
-
-Calculated from:
-- paths 
-
-**Betweenness**:
-
-Dictionary of edges and betweenness value (float)
-
-    {egdge: betweennes_value}
-    
-    {(1, 2): 2.5, (5, 6): 0.3333333333333333, (4, 7): 1.3333333333333333, (1, 3): 3.5, (2, 3): 2.5, (4, 6): 0.3333333333333333, (4, 5): 1.3333333333333333, (6, 7): 0.3333333333333333, (2, 4): 4.0}
-
-It is calculated iteratively for each source:
-- path_count_map (single source)
-- edges_count_map (single source)
-
-**Communities**:
-
-Set of node ids
-
-    {node}
-    {1,2,3} 
-
-**Components**:
-
-Tuple of communities
-
-    (community)
-    ({1, 2, 3}, {4, 6}, {5}, {7}, {8})
-
-### Distributed
-
-**Nodes RDD**
-
-List of nodes.
-
-    [node]
-    
-    [1, 6, 8, 2, 3]
-
-**Graph Broadcast**
-
-Spark Broadcast variable with Graph object
-
-
-**Shortest Paths RDD**
+This RDD holds the result from an invocation of the SSSP algorithm:
 
     shortest_paths_rdd -> [(source, paths)]
     paths -> {target: [shortest_path]}
@@ -187,25 +158,43 @@ Spark Broadcast variable with Graph object
      )
     ]
 
+
+**Edges count map**:
+
+contains count of shortest paths to this target through this edge
+ 
+    {target: {edge: edge_count}}
+    
+    {1: {}, 2: {(1, 2): 1.0, (3, 2): 1.0, (1, 3): 1.0}, 3: {(1, 3): 1.0}, 4: {(1, 2): 1.0, (3, 2): 1.0, (1, 3): 1.0, (2, 4): 2.0}, 5: {(1, 2): 1.0, (4, 5): 2.0, (3, 2): 1.0, (1, 3): 1.0, (2, 4): 2.0}, 6: {(1, 2): 3.0, (5, 6): 2.0, (3, 2): 3.0, (1, 3): 3.0, (4, 6): 2.0, (4, 5): 2.0, (7, 6): 2.0, (2, 4): 6.0, (4, 7): 2.0}, 7: {(1, 2): 1.0, (4, 7): 2.0, (1, 3): 1.0, (3, 2): 1.0, (2, 4): 2.0}, 8: {}}
+
+
+**Betweenness**:
+
+A  Dictionary of edges and their betweenness value (float) as generated based on one SSSP invocation, i.e., these will be _partial_ betweeness values
+
+    {egdge: betweennes_value}
+    
+    {(1, 2): 2.5, (5, 6): 0.3333333333333333, (4, 7): 1.3333333333333333, (1, 3): 3.5, (2, 3): 2.5, (4, 6): 0.3333333333333333, (4, 5): 1.3333333333333333, (6, 7): 0.3333333333333333, (2, 4): 4.0}
+
+
+**Communities**:
+
+Set of node ids
+
+    {node}
+    {1,2,3} 
+
+**Components**:
+
+Each connected component in the graph is partitioned into communities. This is represented as:
+
+    (community)
+    ({1, 2, 3}, {4, 6}, {5}, {7}, {8})
+
+
 **Edges Count RDD**
 
-Contains count of shortests paths that goes through each edge 
-
-    edges_count_rdd -> [((source, target), (edge, edge_count))]
-    (source, target): define the nodes for shortest path computation, i.e. this is not an edge
-    edge -> (u, v)
-    edge_count -> number of shortest paths between 'source' and 'target' that goes through 'edge'
-
-    [
-     ((1, 2), ((2, 8), 1.0)),
-     ((1, 2), ((1, 8), 1.0)),
-     ((1, 2), ((2, 6), 1.0)),
-     ((1, 2), ((1, 6), 1.0)),
-     ((1, 3), ((1, 8), 1.0))
-    ]
-
-
-**Paths Count RDD**
+Contains count of shortests paths that goes through each edge. Used to compute betweeness but you are not required to use it explicitly in**Paths Count RDD**
 
 Contains the number of shortest paths between two nodes
 
@@ -233,7 +222,7 @@ Contains the number of shortest paths between two nodes
       ((13, 14), 45.63809523809524)
     ]
 
-## Benchmark
+## Benchmark -- expected execution times.
 
 Edges: 3000;		Target Level: 5;			Sequential Computing Time (seconds): 298.97922587394714 \
 Edges: 1000;		Target Level: 5;			Distributed Computing Time (seconds): 78.53743696212769 \
