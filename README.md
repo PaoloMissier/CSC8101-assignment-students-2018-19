@@ -14,7 +14,7 @@ At this point, we build one recommender model using the same ALS approach, but *
 The exercise ends with a comparison of the performance of the global model relative to the smaller community models. 
 is it true that the models that only consider users within a community perform better for that community than the global model?
 
-![assignment tasks summary](resources/Coursework-tasks.pdf)
+![assignment tasks summary](resources/Coursework-tasks.png)
 
 
 ## Repository File Structure
