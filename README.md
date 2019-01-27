@@ -39,13 +39,14 @@ You will be using only one of the files in the dataset: **ratings.csv**.  The la
 
 ## Task 2: Build the user-user network.
 
-- load up **ratings.parquet** again
-- create a graph where:
-  -- for each psir of users *u1*, *u2* there is an edge with associated weight *w*, where *w* is the number of movies that both *u1* and *u2* have rated (regardless on the actual rating).
-  -- if *u1* and *u2* have not got any rating in common, there is no edge between them.
+* load up **ratings.parquet** again
+* create a graph where:
+  * for each pair of users _u1_, _u2_ there is an edge with associated weight _w_, where _w_ is the number of movies that both _u1_ and _u2_ have rated (regardless on the actual rating).
+  * if _u1"_ and _u2_ have not got any rating in common, there is no edge between them.
 
 It is important that you comply with the prescribed output format for the graph, because it is to be used as input for the next step.
 In Spark memory, this is a dataframe with Schema
+
 ```(source_node, target_node, weight)```
     
 example:    
@@ -55,7 +56,7 @@ example:
     2,3,1
     2,4,1
 ```
-a small samnple file is provided [here](data/edge_sample.csv). 
+a small sample file is provided [here](data/edge_sample.csv). 
 
 
 
