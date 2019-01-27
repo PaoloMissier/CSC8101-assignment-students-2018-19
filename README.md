@@ -194,7 +194,9 @@ Each connected component in the graph is partitioned into communities. This is r
 
 **Edges Count RDD**
 
-Contains count of shortests paths that goes through each edge. Used to compute betweeness but you are not required to use it explicitly in**Paths Count RDD**
+Contains count of shortests paths that go through each edge. Used to compute betweeness but you are not required to use it explicitly in the assignment.
+
+**Paths Count RDD**
 
 Contains the number of shortest paths between two nodes
 
