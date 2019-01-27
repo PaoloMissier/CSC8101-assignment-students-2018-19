@@ -16,6 +16,20 @@ is it true that the models that only consider users within a community perform b
 
 ![assignment tasks summary](resources/Coursework-tasks.png)
 
+All programming is in Python for Spark and occurs using Databricks notebooks, attached to the shared Spark cluster provided for the module.
+
+Details of each of the tasks are given below.
+
+## The MovieLens dataset
+The original datasets are [here](https://grouplens.org/datasets/movielens/).
+
+The dataset comes in two sizes:
+- small, for code debugging purposes. Download and inspect from [here](data/ml-latest-small.zip).
+   this contains 100,000 ratings applied to 9,000 movies by 600 users. Last updated 9/2018.
+- large, for testing your actual models: 20 million ratings applied to 27,000 movies by 138,000 users. 
+   This has been upoloaded to the cluster data store for you.
+   
+You will be using only one of the files in the dataset: **ratings.csv**.  The large version on the cluster has been stored as a parquet file, a binary format for Spark dataframes that is much faster to load than csv.
 
 ## Repository File Structure
 
