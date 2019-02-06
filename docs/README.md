@@ -9,10 +9,9 @@ Please refer to the figure below.
 
 We note that we can create a user-user network from the user-movie-ratings (U-M-R) matrix, i.e., where each user is represented by a node, and there is an edge between two users u1, u2 if u1 and u2 have rated the same movie. The *weight* of the edge is the number of the same movies that have both rated. Note that for simplicity here we ignore the values of the ratings. 
 Once we have the network, it makes sense to partition it into communities of users, so that users who have rated many of the same movies will likely belong to the same community.
+You will implement a distributed version of the well-known Girwan-Newman (GN)algorithm for community detecteion, using a library for computing SSSP (single-source-shortest-path). The SSSP algorithm is sequential but you should do ypour best to parallelise the multiple invocations that are required to realise GN.
 
-At this point, we build one recommender model using the same ALS approach, but *separately for each community*.
-The exercise ends with a comparison of the performance of the global model relative to the smaller community models. 
-is it true that the models that only consider users within a community perform better for that community than the global model?
+The exercise ends with an analysis of the communities found in the previous step. You may be required to run the same algoriuthm on a different dataset to see the differences. Please see specific instructions in the template notebooks. 
 
 ![assignment tasks summary](../resources/Coursework-tasks.png)
 
