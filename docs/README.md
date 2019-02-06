@@ -38,73 +38,24 @@ You will be using only one of the files in the dataset: **ratings.csv**.  The la
 
 ## Task 2: Build the user-user network.
 
-* load up **ratings.parquet** again
-* create a graph where:
-  * for each pair of users _u1_, _u2_ there is an edge with associated weight _w_, where _w_ is the number of movies that both _u1_ and _u2_ have rated (regardless on the actual rating).
-  * if _u1"_ and _u2_ have not got any rating in common, there is no edge between them.
-
-It is important that you comply with the prescribed output format for the graph, because it is to be used as input for the next step.
-In Spark memory, this is a dataframe with Schema
-
-```(source_node, target_node, weight)```
-    
-example:    
-```    source,target,weight
-    1,6,1
-    1,8,1
-    2,3,1
-    2,4,1
-```
-a small sample file is provided [here](data/edge_sample.csv). 
+instructions: see notebook: **task2-template**
 
 ## Task 3: Community detection.
 
 This task requires you to implement a version of the Girwan-Newman algorithm that is optimised to make use of multiple workers on the Spark clsuter.
 
-You are given a python module that operates on the graoh structure you generated in Task 2, and implements: 
-* SSSP (Single Source Shortest Path) 
-* given a path between two nodes, compute the betweeness value for each of the edges along the path
+You are given a python module that operates on the graoh structure you generated in Task 2, and implements a number of functions to get you started.
 
-You may start from notebook **task3** which has the required **import** statements
+Using these methods, you will implement a version of GN that includes MapReduce patterns to *parallelise execution on the entire graph.*
 
-Using these methods, you will implement a version of GN that includes MapReduce patterns to parallelise execution on the entire graph.
-Details on this step will have been given in class.
+instructions: see notebook: **task3-template**
 
-Report on the running for the algorithm both on the small and full datasets.
+## Task 4: Analysis of your community detection results.
 
-You will need to be careful how you implement this step, because an inefficient implementation will simply not scale to the size of the full dataset.
+can you try and provide some insight into why the community detection algorithm may not have performed as expected?
+for this, you may want to go back to your raw and intermediate datasets and run some summary statistics and basic analytics:
+for instance: is this a dense/sparse set of ratings? what is the average number of ratings per user? how are users connected in the user-user network?
 
-Note also that the number of communities you choose depends on the betweeness threshold. It is recommended that you do not generate more than 5 communities.
-
-# Checkpointing.
-
-In case you get stuck on this Task, a copy of its output (the community files) can be provided. You will get less than full  marks for this task, depending on your progress, but you will be able to progress to the next task.
-
-## Task 4: Generate user-user sub-matrices for each community
-
-Each community is a subgraph of the graph you generated in Task 2. For each of these, you need to extract the relevant rows and columns from the original U-M-R dataset, so that you can then train a recommender model for each of these communities (see next Task).
-
-In practice, given a community graph you will simply select all rows that correspond to users in that community.
-
-## Task 5:  build community-specific recommendation models
-
-This is effectively the same as Task 1, but repreated for each sub-matrix as produced in Task 4. For each model, report its RMSE performance.
-
-## Task 6: Compare models
-
-In this final task you are required to compare performance results obtained in Task 1 and Task 5, and discuss the rationale for choosing either solution.
-This is not a programming task but you are required to make notes in your notebook, and expect to discuss these during your viva.
-   
-
-
-# Prerequisite Packages
-
-Packages|Version
----|---
-networkx|2.2.0
-matplotlib|>=3.0.1tin
-pyspark|=2.3.0
-pandas|>=0.23.0
 
 
 ## Details on of the Data Structures used in the assignment
@@ -157,16 +108,6 @@ This RDD holds the result from an invocation of the SSSP algorithm:
      )
     ]
 
-
-**Edges count map**:
-
-contains count of shortest paths to this target through this edge
- 
-    {target: {edge: edge_count}}
-    
-    {1: {}, 2: {(1, 2): 1.0, (3, 2): 1.0, (1, 3): 1.0}, 3: {(1, 3): 1.0}, 4: {(1, 2): 1.0, (3, 2): 1.0, (1, 3): 1.0, (2, 4): 2.0}, 5: {(1, 2): 1.0, (4, 5): 2.0, (3, 2): 1.0, (1, 3): 1.0, (2, 4): 2.0}, 6: {(1, 2): 3.0, (5, 6): 2.0, (3, 2): 3.0, (1, 3): 3.0, (4, 6): 2.0, (4, 5): 2.0, (7, 6): 2.0, (2, 4): 6.0, (4, 7): 2.0}, 7: {(1, 2): 1.0, (4, 7): 2.0, (1, 3): 1.0, (3, 2): 1.0, (2, 4): 2.0}, 8: {}}
-
-
 **Betweenness**:
 
 A  Dictionary of edges and their betweenness value (float) as generated based on one SSSP invocation, i.e., these will be _partial_ betweeness values
@@ -190,46 +131,6 @@ Each connected component in the graph is partitioned into communities. This is r
     (community)
     ({1, 2, 3}, {4, 6}, {5}, {7}, {8})
 
-
-**Edges Count RDD**
-
-Contains count of shortests paths that go through each edge. Used to compute betweeness but you are not required to use it explicitly in the assignment.
-
-**Paths Count RDD**
-
-Contains the number of shortest paths between two nodes
-
-    path_count_rdd -> [(source, target), paths_count]
-
-    [
-      ((1, 1), 1), 
-      ((1, 2), 2), 
-      ((1, 3), 3), 
-      ((1, 4), 1), 
-      ((1, 5), 3)
-    ]
-
-**Edge Betweenness RDD**
-
-    edge_betweenness_rdd -> [(edge, betweenness)]
-    edge -> (u,v)
-    betweenness -> float
-
-    [
-      ((2, 8), 69.9047619047619),
-      ((6, 12), 191.4793650793651),
-      ((11, 15), 106.36190476190477),
-      ((5, 22), 135.8968253968254),
-      ((13, 14), 45.63809523809524)
-    ]
-
-## Benchmark -- expected execution times.
-
-Edges: 3000;		Target Level: 5;			Sequential Computing Time (seconds): 298.97922587394714 \
-Edges: 1000;		Target Level: 5;			Distributed Computing Time (seconds): 78.53743696212769 \
-Edges: 2000;		Target Level: 5;			Distributed Computing Time (seconds): 334.11402106285095 \
-Edges: 2000;		Target Level: 5;			Sequential Computing Time (seconds): 112.116375207901 \
-Edges: 1000;		Target Level: 5;			Sequential Computing Time (seconds): 25.027655601501465
 
 ## References
 
