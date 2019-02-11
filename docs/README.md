@@ -33,7 +33,7 @@ You will be using only one of the files in the dataset: **ratings.csv**.  The la
 ## Task 1: build a global recommendation model
 
 - Start from the **task1** notebook provided (including loading  **ratings.paquet** into a dataframe
-- train a recommender model using the ALS approach. You may refer to the example code on the [Spark doc for Collaborative Filtering](https://spark.apache.org/docs/latest/mllib-collaborative-filtering.html#examples). However be aware that the input data format may be different
+- train a recommender model using the ALS approach. You may refer to the example code on the [Spark doc for Collaborative Filtering](https://spark.apache.org/docs/latest/ml-collaborative-filtering.html). However be aware that the input data format may be different
 - after you build the model, you need to add code to automatically optimise the *rank* hyperparameter, usiong RMSE as your performance metric. Report your best results in the notebook.
 
 ## Task 2: Build the user-user network.
