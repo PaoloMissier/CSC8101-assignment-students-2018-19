@@ -7,11 +7,11 @@ We use the entire movielens dataset.
 However, building the model out of the dataset is only one of the tasks. 
 Please refer to the figure below.
 
-We note that we can create a user-user network from the user-movie-ratings (U-M-R) matrix, i.e., where each user is represented by a node, and there is an edge between two users u1, u2 if u1 and u2 have rated the same movie. The *weight* of the edge is the number of the same movies that have both rated. Note that for simplicity here we ignore the values of the ratings. 
-Once we have the network, it makes sense to partition it into communities of users, so that users who have rated many of the same movies will likely belong to the same community.
-You will implement a distributed version of the well-known Girwan-Newman (GN)algorithm for community detecteion, using a library for computing SSSP (single-source-shortest-path). The SSSP algorithm is sequential but you should do ypour best to parallelise the multiple invocations that are required to realise GN.
+The second task is to create a user-user network from the user-movie-ratings (U-M-R) matrix from the movielens dataset, i.e., where each user is represented by a node, and there is an edge between two users u1, u2 if u1 and u2 have rated the same movie. The *weight* of the edge is the number of the same movies that have both rated. Note that for simplicity here we ignore the values of the ratings. 
+Once we have the network, you will partition it into communities of users, so that users who have rated many of the same movies will likely belong to the same community.
+You will implement a distributed version of the well-known Girwan-Newman (GN) algorithm for community detecteion, using a library for computing SSSP (single-source-shortest-path). The SSSP algorithm is sequential but you should do your best to parallelise the multiple invocations that are required to realise GN.
 
-The exercise ends with an analysis of the communities found in the previous step. You may be required to run the same algoriuthm on a different dataset to see the differences. Please see specific instructions in the template notebooks. 
+The exercise ends with an analysis of the communities found in the previous step. You may be required to run the same algorithm on a different dataset to see the differences. Please see specific instructions in the template notebooks. 
 
 ![assignment tasks summary](../resources/Coursework-tasks.png)
 
@@ -26,7 +26,7 @@ The dataset comes in two sizes:
 - small, for code debugging purposes. Download and inspect from [here](data/ml-latest-small.zip).
    this contains 100,000 ratings applied to 9,000 movies by 600 users. Last updated 9/2018.
 - large, for testing your actual models: 20 million ratings applied to 27,000 movies by 138,000 users. 
-   This has been upoloaded to the cluster data store for you.
+   This has been uploaded to the cluster data store for you.
    
 You will be using only one of the files in the dataset: **ratings.csv**.  The large version on the cluster has been stored as a parquet file, a binary format for Spark dataframes that is much faster to load than csv.
 
