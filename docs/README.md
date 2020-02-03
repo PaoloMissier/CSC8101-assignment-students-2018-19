@@ -1,4 +1,4 @@
-# CSC8101 2019-20 Coursework assignment
+# CSC8101 2018-19 Coursework assignment
 
 This is about building models for providing movie recommendations. 
 We use the ALS algorithm (see lecture notes) with explicit movie ratings.
